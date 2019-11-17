@@ -306,7 +306,7 @@ function download_update()
 	file:write(xml)
 	file:close()
 	ColourNote("#FBFF00", "", "[", "#9AC7FE", "", "Winds Trading", "#FBFF00", "", "]", "white", "", " Done. Reloading plugin now.")
-	Execute(GetAlphaOption("script_prefix").."DoAfterSpecial(.2, \"ReloadPlugin('"..GetPluginID().."')\", 12")
+	Execute(GetAlphaOption("script_prefix").."DoAfterSpecial(.2, \"ReloadPlugin('"..GetPluginID().."')\", 12)")
 end
 
 DoAfterSpecial(.2, "help()", 12)
