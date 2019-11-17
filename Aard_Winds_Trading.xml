@@ -152,7 +152,7 @@ function upload_extras(name, line, args)
 	tag = nil
 	
 	if args.yes == "yes" then
-		local url = "https://winds.clansite.org/easy/"
+		local url = "https://winds.clansite.org/easy/?"..me
 		local data = "player="..me.."&extras="..table.concat(extras, ",")
 
 		--Note(data)
@@ -246,7 +246,7 @@ function end_case(name, line, args)
 	end
 	
 	id = args.id
-	local url = "https://winds.clansite.org/easy/"
+	local url = "https://winds.clansite.org/easy/?"..me
 	local data = "player="..me.."&case="..case.."&id="..id.."&cards="..table.concat(cards, ",")
 
 	--Note(data)
