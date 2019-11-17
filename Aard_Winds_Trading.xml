@@ -122,7 +122,7 @@ descripz
   <alias
    name="update"
    match="^wtupdate$"
-   enabled="n"
+   enabled="y"
    regexp="y"
    script="download_update"
    sequence="100"
@@ -152,7 +152,6 @@ function upload_extras(name, line, args)
 	tag = nil
 	
 	if args.yes == "yes" then
-		
 		local url = "https://winds.clansite.org/easy/"
 		local data = "player="..me.."&extras="..table.concat(extras, ",")
 
