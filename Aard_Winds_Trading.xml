@@ -119,6 +119,15 @@ descripz
    sequence="100"
   >
   </alias>
+  <alias
+   name="update"
+   match="^wtupdate$"
+   enabled="n"
+   regexp="y"
+   script="download_update"
+   sequence="100"
+  >
+  </alias>
 </aliases>
 
 <!--  Script  -->
@@ -286,6 +295,16 @@ function help()
 	ColourNote("white", "", "(Extras are reset at every look, so they all must be in the same location.)")
 	ColourNote("gray", "", string.rep("-", 80))
 	Note()
+end
+
+function download_update()
+	local xml, code = https.request("https://raw.githubusercontent.com/aardlyworthit/winds_trading/master/Aard_Winds_Trading.xml")
+	local path = GetPluginInfo(GetPluginID(), 6)
+
+	local file = assert(io.open(path, "w"))
+	file:write(xml)
+	file:close()
+	DoAfterSpecial(.2, "ReloadPlugin('"..GetPluginID().."')", 12)	
 end
 
 DoAfterSpecial(.2, "help()", 12)
