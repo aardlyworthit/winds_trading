@@ -311,6 +311,7 @@ end
 
 DoAfterSpecial(.2, "help()", 12)
 
+Note("OK")
 
 ]]>
 </script>
