@@ -292,6 +292,7 @@ function help()
 	ColourNote("gray", "", string.rep("-", 80))
 	ColourNote("white", "", "This plugin will upload your cases and extra cards. Just identify the case and \nthe plugin does the rest.  For extra cards, look in your inventory or a bag and \nyou will have the option to upload or not. The alias expires after 30 seconds.")
 	ColourNote("white", "", "(Extras are reset at every look, so they all must be in the same location.)")
+	ColourNote("white", "", "You can update this plugin from the GitHub source by submitting ", "yellow", "", "wtupdate", "white", "", ".")
 	ColourNote("gray", "", string.rep("-", 80))
 	Note()
 end
