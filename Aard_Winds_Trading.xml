@@ -297,13 +297,16 @@ function help()
 end
 
 function download_update()
+	ColourNote("#FBFF00", "", "[", "#9AC7FE", "", "Winds Trading", "#FBFF00", "", "]", "white", "", " Downloading update, please wait.")
 	local xml, code = https.request("https://raw.githubusercontent.com/aardlyworthit/winds_trading/master/Aard_Winds_Trading.xml")
 	local path = GetPluginInfo(GetPluginID(), 6)
 
+	ColourNote("#FBFF00", "", "[", "#9AC7FE", "", "Winds Trading", "#FBFF00", "", "]", "white", "", " Overwriting existing plugin file.")
 	local file = assert(io.open(path, "w"))
 	file:write(xml)
 	file:close()
-	DoAfterSpecial(.2, "ReloadPlugin('"..GetPluginID().."')", 12)	
+	ColourNote("#FBFF00", "", "[", "#9AC7FE", "", "Winds Trading", "#FBFF00", "", "]", "white", "", " Done. Reloading plugin now.")
+	DoAfterSpecial(1, "ReloadPlugin('"..GetPluginID().."')", 12)	
 end
 
 DoAfterSpecial(.2, "help()", 12)
