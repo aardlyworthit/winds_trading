@@ -374,8 +374,17 @@ function check_response(t, j)
 		Note()
 	end
 	
-	if not t or not id then -- dont show trade option
+	if not t then -- dont show trade option
 		return 
+	end
+	
+	if not id then
+		Note()
+		ColourNote("gray", "", string.rep("-", 80))
+		ColourNote("#FBFF00", "", "[", "#9AC7FE", "", "Winds Trading", "#FBFF00", "", "]", "white", "", " No case identified recently. Cannot check for trades.")
+		ColourNote("gray", "", string.rep("-", 80))
+		Note()
+		return
 	end
 	
 	EnableAlias("trade")
