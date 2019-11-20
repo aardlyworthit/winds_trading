@@ -116,7 +116,16 @@ descripz
    enabled="n"
    regexp="y"
    script="upload_extras"
-   sequence="100"
+   sequence="1"
+  >
+  </alias>
+  <alias
+   name="trade"
+   match="^(?<ok>ok)|naa$"
+   enabled="n"
+   regexp="y"
+   script="check_trade"
+   sequence="1"
   >
   </alias>
   <alias
@@ -136,6 +145,7 @@ descripz
 <script>
 <![CDATA[
 require "tprint"
+require "json"
 local https = require("ssl.https")
 local ltn12 = require("ltn12")
 
@@ -143,7 +153,7 @@ local resp, code, headers, status
 local response = {}
 local cards, extras = {}, {}
 local me, id, case
-local tag
+local tag, ttag
 
 function upload_extras(name, line, args)
 	
@@ -167,10 +177,50 @@ function upload_extras(name, line, args)
 			source = ltn12.source.string(data),
 			sink = ltn12.sink.table(response)
 		}
-		DoAfterSpecial(.2, "check_response()", 12)	
+		DoAfterSpecial(.2, "check_response(true, false)", 12)	
 	else
 		Note()
 		ColourNote("#FBFF00", "", "[", "#9AC7FE", "", "Winds Trading", "#FBFF00", "", "]", "white", "", " You chose not to upload extras.")
+		Note()
+	end
+end
+
+function check_trade(name, line, args)
+	EnableAlias("trade", false)
+	
+	ttag = nil
+	
+	if args.ok == "ok" then
+		response = {}
+		
+		local url = "https://winds.clansite.org/easy/trade/?"..me
+		local data = "player="..me.."&case_id="..id
+
+		--Note(data)
+		resp, code, headers, status = https.request { 
+			url = url,
+			method = "POST",
+			headers = {
+				["Authorization"] = "Cynik=best",
+				["Content-Type"] = "application/x-www-form-urlencoded",
+				["Content-Length"] = #data
+			},
+			source = ltn12.source.string(data),
+			sink = ltn12.sink.table(response)
+		}
+		DoAfterSpecial(.2, "check_response(false, true)", 12)	
+	else
+		Note()
+		ColourNote("#FBFF00", "", "[", "#9AC7FE", "", "Winds Trading", "#FBFF00", "", "]", "white", "", " You chose not to check for trades.")
+		Note()
+	end
+end
+
+function expire_trade_alias(t)
+	if t == ttag then
+		EnableAlias("trade", false)
+		Note()
+		ColourNote("#FBFF00", "", "[", "#9AC7FE", "", "Winds Trading", "#FBFF00", "", "]", "white", "", " Trade check alias has expired.")
 		Note()
 	end
 end
@@ -215,11 +265,14 @@ function end_extras()
 	Note()
 	
 	tag = os.time()
-	DoAfterSpecial(30, "expire_alias("..tag..")", 12)
+	DoAfterSpecial(20, "expire_alias("..tag..")", 12)
 	
 end
 
 function start_case()
+
+	EnableAlias("trade", false) -- disable trade alias in case it's enabled
+	
 	if not me then
 		any, me = CallPlugin("3e7dedbe37e44942dd46d264", "gmcpval", "char.base.name")
 	end
@@ -261,28 +314,78 @@ function end_case(name, line, args)
 		source = ltn12.source.string(data),
 		sink = ltn12.sink.table(response)
 	}
-	DoAfterSpecial(.2, "check_response()", 12)
+	DoAfterSpecial(.2, "check_response(true, false)", 12)
 end
 
-function check_response()
+function check_response(t, j)
 	if not code then -- probably not possible but eh
 		--Note("No response yet.")
-		DoAfterSpecial(.2, "check_response()", 12)
+		DoAfterSpecial(.2, "check_response("..tostring(t)..", "..j..")", 12)
 		return
 	end
 	if not response[1] then
 		Note("There seems to be a problem with the server response.")
 		return
 	end
-	local msgs = loadstring("return "..response[1])()
-	Note()
-	for i, msg in ipairs(msgs) do
-		ColourNote("#FBFF00", "", "[", "#9AC7FE", "", "Winds Trading", "#FBFF00", "", "]", "white", "", " "..msg)
+	
+	if j then -- json trade response
+		--rint(json.decode(response[1]))
+		local tbl = json.decode(response[1])
+		local p = {}
+		for player, _ in pairs(tbl) do
+			table.insert(p, player)
+		end
+		Note()
+		ColourNote("gray", "", string.rep("-", 80))
+		ColourNote("#FBFF00", "", "[", "#9AC7FE", "", "Winds Trading", "#FBFF00", "", "]", "White", "", " Checked server for trade opportunities.")
+		ColourNote("gray", "", string.rep("-", 80))
+		if #p > 0 then
+			table.sort(p)
+			for i, player in ipairs(p) do
+				if i > 1 then
+					Note()
+				end
+				if tbl[player] then 
+					if tbl[player].has then
+						ColourNote("yellow", "", player)
+						ColourNote("#9AC7FE", "", "    Has: ", "white", "", table.concat(tbl[player].has, ", "))
+					end
+					if tbl[player].needs then
+						--Note(player.." needs "..table.concat(tbl[player].needs, ", "))
+						ColourNote("#9AC7FE", "", "  Needs: ", "white", "", table.concat(tbl[player].needs, ", "))
+					end
+				end
+			end
+		else
+			ColourNote("white", "", "  Sorry but no trades found.")
+		end
+		ColourNote("gray", "", string.rep("-", 80))
+		Note()
+		Note()
+	else
+		local msgs = loadstring("return "..response[1])()
+		Note()
+		for i, msg in ipairs(msgs) do
+			ColourNote("#FBFF00", "", "[", "#9AC7FE", "", "Winds Trading", "#FBFF00", "", "]", "white", "", " "..msg)
+		end
+		ColourTell("#FBFF00", "", "[", "#9AC7FE", "", "Winds Trading", "#FBFF00", "", "]", "white", "", " View your cases and extra cards here:  ")
+		Hyperlink("https://winds.clansite.org/case/view/?player="..me, "https://winds.clansite.org/case/view/?player="..me, "", "#FBFF00", "", true)
+		Note()
+		Note()
 	end
-	ColourTell("#FBFF00", "", "[", "#9AC7FE", "", "Winds Trading", "#FBFF00", "", "]", "white", "", " View your cases and extra cards here:  ")
-	Hyperlink("https://winds.clansite.org/case/view/?player="..me, "https://winds.clansite.org/case/view/?player="..me, "", "#FBFF00", "", true)
+	
+	if not t then -- dont show trade option
+		return 
+	end
+	
+	EnableAlias("trade")
 	Note()
+	ColourNote("gray", "", string.rep("-", 80))
+	ColourNote("#FBFF00", "", "[", "#9AC7FE", "", "Winds Trading", "#FBFF00", "", "]", "white", "", " Check for trades? Submit ", "yellow", "", "ok", "white", "", " to check, or ", "yellow", "", "naa", "white", "", " to cancel.")
+	ColourNote("gray", "", string.rep("-", 80))
 	Note()
+	ttag = os.time()
+	DoAfterSpecial(20, "expire_trade_alias("..ttag..")", 12)
 end
 
 function help()
@@ -290,8 +393,9 @@ function help()
 	ColourNote("gray", "", string.rep("-", 80))
 	ColourNote("#FBFF00", "", "[", "#9AC7FE", "", "Winds Trading", "#FBFF00", "", "]")
 	ColourNote("gray", "", string.rep("-", 80))
-	ColourNote("white", "", "This plugin will upload your cases and extra cards. Just identify the case and \nthe plugin does the rest.  For extra cards, look in your inventory or a bag and \nyou will have the option to upload or not. The alias expires after 30 seconds.")
+	ColourNote("white", "", "This plugin will upload your cases and extra cards. Just identify the case and \nthe plugin does the rest.  For extra cards, look in your inventory or a bag and \nyou will have the option to upload or not. The alias expires after 20 seconds.")
 	ColourNote("white", "", "(Extras are reset at every look, so they all must be in the same location.)")
+	ColourNote("white", "", "After uploading a case or extra cards, you will have the option to check for\ntrade opportunities. The alias expires after 20 seconds.")
 	ColourNote("white", "", "You can update this plugin from the GitHub source by submitting ", "yellow", "", "wtupdate", "white", "", ".")
 	ColourNote("gray", "", string.rep("-", 80))
 	Note()
@@ -307,7 +411,7 @@ function download_update()
 	file:write(xml)
 	file:close()
 	ColourNote("#FBFF00", "", "[", "#9AC7FE", "", "Winds Trading", "#FBFF00", "", "]", "white", "", " Done. Reloading plugin now.")
-	Execute(GetAlphaOption("script_prefix").."DoAfterSpecial(.2, \"ReloadPlugin('"..GetPluginID().."')\", 12)")
+	Execute(GetAlphaOption("script_prefix").."DoAfterSpecial(1, \"ReloadPlugin('"..GetPluginID().."')\", 12)")
 end
 
 DoAfterSpecial(.2, "help()", 12)
