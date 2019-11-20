@@ -337,7 +337,7 @@ function check_response(t, j)
 		end
 		Note()
 		ColourNote("gray", "", string.rep("-", 80))
-		ColourNote("#FBFF00", "", "[", "#9AC7FE", "", "Winds Trading", "#FBFF00", "", "]", "White", "", " Checked server for trade opportunities.")
+		ColourNote("#FBFF00", "", "[", "#9AC7FE", "", "Winds Trading", "#FBFF00", "", "]", "White", "", " Trades for "..case.." with ID "..id..".")
 		ColourNote("gray", "", string.rep("-", 80))
 		if #p > 0 then
 			table.sort(p)
@@ -374,7 +374,7 @@ function check_response(t, j)
 		Note()
 	end
 	
-	if not t then -- dont show trade option
+	if not t or not id then -- dont show trade option
 		return 
 	end
 	
