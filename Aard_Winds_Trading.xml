@@ -347,7 +347,7 @@ function check_response(t, j)
 				end
 				if tbl[player] then 
 					if tbl[player].has then
-						ColourNote("yellow", "", player)
+						ColourNote("yellow", "", player, "gray", "", tbl[player].updated)
 						ColourNote("#9AC7FE", "", "    Has: ", "white", "", table.concat(tbl[player].has, ", "))
 					end
 					if tbl[player].needs then
