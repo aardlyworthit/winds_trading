@@ -320,7 +320,7 @@ end
 function check_response(t, j)
 	if not code then -- probably not possible but eh
 		--Note("No response yet.")
-		DoAfterSpecial(.2, "check_response("..tostring(t)..", "..j..")", 12)
+		DoAfterSpecial(.2, "check_response("..tostring(t)..", "..tostring(j)..")", 12)
 		return
 	end
 	if not response[1] then
