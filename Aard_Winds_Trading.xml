@@ -162,7 +162,7 @@ function upload_extras(name, line, args)
 	tag = nil
 	
 	if args.yes == "yes" then
-		local url = "https://winds.clansite.org/easy/?"..me
+		local url = "https://winds.aardlyworthit.com/easy/?"..me
 		local data = "player="..me.."&extras="..table.concat(extras, ",")
 
 		--Note(data)
@@ -193,7 +193,7 @@ function check_trade(name, line, args)
 	if args.ok == "ok" then
 		response = {}
 		
-		local url = "https://winds.clansite.org/easy/trade/?"..me
+		local url = "https://winds.aardlyworthit.com/easy/trade/?"..me
 		local data = "player="..me.."&case_id="..id
 
 		--Note(data)
@@ -299,7 +299,7 @@ function end_case(name, line, args)
 	end
 	
 	id = args.id
-	local url = "https://winds.clansite.org/easy/?"..me
+	local url = "https://winds.aardlyworthit.com/easy/?"..me
 	local data = "player="..me.."&case="..case.."&id="..id.."&cards="..table.concat(cards, ",")
 
 	--Note(data)
@@ -369,7 +369,7 @@ function check_response(t, j)
 			ColourNote("#FBFF00", "", "[", "#9AC7FE", "", "Winds Trading", "#FBFF00", "", "]", "white", "", " "..msg)
 		end
 		ColourTell("#FBFF00", "", "[", "#9AC7FE", "", "Winds Trading", "#FBFF00", "", "]", "white", "", " View your cases and extra cards here:  ")
-		Hyperlink("https://winds.clansite.org/case/view/?player="..me, "https://winds.clansite.org/case/view/?player="..me, "", "#FBFF00", "", true)
+		Hyperlink("https://winds.aardlyworthit.com/case/view/?player="..me, "https://winds.aardlyworthit.com/case/view/?player="..me, "", "#FBFF00", "", true)
 		Note()
 		Note()
 	end
